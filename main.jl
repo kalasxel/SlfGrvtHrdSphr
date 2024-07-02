@@ -19,16 +19,15 @@ const halfLenght = 40e0
 const xi, xf = -halfLenght, halfLenght # area. better to keep as cube with equal sides
 const yi, yf = -halfLenght, halfLenght
 const zi, zf = -halfLenght, halfLenght
-const dt = .02 # step
-const tf = 3e1 # final time
-const stFq = 10 :: Int # how many steps between each output
-const nb = 600:: Int # number of particles
+const dt = .002 # step
+const tf = 3e2 # final time
+const stFq = 50 :: Int # how many steps between each output
+const nb = 20:: Int # number of particles
 const M = 1e0 # all particles with the same mass
-const R = 1e0 # all particles with the same radius
+const R = 5e0 # all particles with the same radius
 const G = 10 # dimensionless grav const. G -> G* M* t0^2 / L0^3 since all masses are the same
-const σ = 1e0 # velocity dispersion
-const nbTry = 900000 # number of attempts for creating of spatial distribution without intersections
-
+const σ = 1e0 # initial velocity dispersion
+const nbTry = 900000 # number of attempts for creating spatial distribution without intersections
 
 
 t = 0e0 :: Float64
@@ -57,8 +56,11 @@ end
 
 
 println("Total kinetic energy: ", TotKinEnergy(prtcls))
+println("Total potential energy: ", TotPotEnergy(prtcls))
+const EtotIni =  TotKinEnergy(prtcls) + TotPotEnergy(prtcls)
 
-
+tmp =  TotPotEnergy(prtcls)
+prtcls[1]
 
 while(t<=tf)
 
@@ -112,4 +114,10 @@ end
 
 
 println("Total kinetic energy: ", TotKinEnergy(prtcls))
+println("Total potential energy: ", TotPotEnergy(prtcls))
+
+const EtotFin =  TotKinEnergy(prtcls) + TotPotEnergy(prtcls)
+
+println("Full initial energy: ", EtotIni)
+println("Full final energy: ", EtotFin)
 

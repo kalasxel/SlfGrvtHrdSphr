@@ -75,10 +75,26 @@ function KineticEnergy( prtcl::Particle{T} ) :: T where {T<:Real} # kinetic ener
     return ScalProd( Momentum(prtcl), prtcl.v ) / convert(T,2)
 end
 
-function TotKinEnergy( prtcls::Vector{Particle{T}} ) :: Float64 where {T<:Real}
-    ϵKin = 0e0;
+function TotKinEnergy( prtcls::Vector{Particle{T}} ) :: T where {T<:Real}
+    ϵKin = 0e0
     for p in prtcls
         ϵKin += KineticEnergy(p)
     end
     return ϵKin
+end
+
+function Potential( r::CartesianVector{T}, prtcl::Particle{T} ) :: T where {T<:Real}  # potential of a particle "prtcl" in a point "r"
+    return -G*prtcl.m / AbsVec( r - prtcl.r )    
+end
+
+function TotPotEnergy( prtcls::Vector{Particle{T}} ) :: T where {T<:Real} # calculates full potential energy
+    ϵPot = 0e0
+    for pi in prtcls
+        for pj in prtcls
+            if pi != pj
+                ϵPot += pi.m*pj.m / AbsVec( pi.r - pj.r )
+            end
+        end
+    end
+    return -G*ϵPot/2e0
 end
