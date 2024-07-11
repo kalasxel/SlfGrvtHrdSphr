@@ -45,9 +45,9 @@ end
 function BounceParticles!( pi::Particle{T}, pj::Particle{T} ) where {T<:Real}
 
     delta = AbsVec( pi.r - pj.r ) - ( pi.radius + pj.radius ) # distence exeed
-    if delta <= 0
+    if delta <= convert(T,0)
 
-        mij = 2*pi.m*pj.m / ( pi.m + pj.m ) # reduced mass
+        mij = convert(T,2)*pi.m*pj.m / ( pi.m + pj.m ) # reduced mass
         nij = ( pi.r - pj.r ) / AbsVec( pi.r - pj.r ) # normal to both spheres
         vij = pi.v - pj.v # relative velocity
 

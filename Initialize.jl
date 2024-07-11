@@ -1,5 +1,5 @@
 function Intersection( pi::Particle{T}, pj::Particle{T} ) :: Bool where {T<:Real} # do pi and pj intersect? 
-    if AbsVec( pi.r - pj.r ) - ( pi.radius + pj.radius ) < 0 
+    if AbsVec( pi.r - pj.r ) - ( pi.radius + pj.radius ) < convert(T,0)
         return true
     else 
         return false

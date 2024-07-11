@@ -54,9 +54,12 @@ mutable struct Particle{T<:Real} <: Particles # everything that particle has
     radius :: T
     r :: CartesianVector{T}
     v :: CartesianVector{T}
+    a :: CartesianVector{T}
     function Particle{T}( m=convert(T,0)::T, radius=convert(T,0)::T, 
-                          r=CartesianVector{T}()::CartesianVector{T}, v=CartesianVector{T}()::CartesianVector{T} ) where {T<:Real}
-        new( m, radius, r, v )
+                          r=CartesianVector{T}()::CartesianVector{T},
+                          v=CartesianVector{T}()::CartesianVector{T},
+                          a=CartesianVector{T}()::CartesianVector{T} ) where {T<:Real}
+        new( m, radius, r, v, a )
     end
 end
 
@@ -76,7 +79,7 @@ function KineticEnergy( prtcl::Particle{T} ) :: T where {T<:Real} # kinetic ener
 end
 
 function TotKinEnergy( prtcls::Vector{Particle{T}} ) :: T where {T<:Real}
-    ϵKin = 0e0
+    ϵKin = convert(T,0)
     for p in prtcls
         ϵKin += KineticEnergy(p)
     end
@@ -88,7 +91,7 @@ function Potential( r::CartesianVector{T}, prtcl::Particle{T} ) :: T where {T<:R
 end
 
 function TotPotEnergy( prtcls::Vector{Particle{T}} ) :: T where {T<:Real} # calculates full potential energy
-    ϵPot = 0e0
+    ϵPot = convert(T,0)
     for pi in prtcls
         for pj in prtcls
             if pi != pj
@@ -96,5 +99,5 @@ function TotPotEnergy( prtcls::Vector{Particle{T}} ) :: T where {T<:Real} # calc
             end
         end
     end
-    return -G*ϵPot/2e0
+    return -G*ϵPot/convert(T,2)
 end
