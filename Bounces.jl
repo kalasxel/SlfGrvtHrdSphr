@@ -62,3 +62,17 @@ function BounceParticles!( pi::Particle{T}, pj::Particle{T} ) where {T<:Real}
 
     end
 end
+
+
+function AllBounces!( prtcls::Vector{Particle{T}} ) where {T<:Real}
+
+    for pi in prtcls
+        BounceBoundaries!(pi)
+        for pj in prtcls
+            if pi != pj
+                BounceParticles!(pi,pj)
+            end
+        end
+    end
+    
+end

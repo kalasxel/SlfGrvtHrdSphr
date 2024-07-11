@@ -5,6 +5,7 @@ using DelimitedFiles
 include("ParticleStructure.jl")
 include("Bounces.jl")
 include("Initialize.jl")
+include("Solvers.jl")
 
 
 println("Start")
@@ -19,7 +20,7 @@ const halfLenght = 40e0
 const xi, xf = -halfLenght, halfLenght # area. better to keep as cube with equal sides
 const yi, yf = -halfLenght, halfLenght
 const zi, zf = -halfLenght, halfLenght
-const dt = .001 # step
+const dt = .0001 # step
 const tf = 3e2 # final time
 const nbStps = Int(round( tf/dt, RoundDown )) # number of steps
 const stFq = 1000 :: Int # how many steps between each output
@@ -61,34 +62,18 @@ println("Total kinetic energy: ", TotKinEnergy(prtcls))
 println("Total potential energy: ", TotPotEnergy(prtcls))
 const EtotIni =  TotKinEnergy(prtcls) + TotPotEnergy(prtcls)
 
+#prtclsOld = deepcopy(prtcls)
+#EulerStep!(prtcls)
+#AllBounces!(prtcls)
+
 @time while(t<=tf)
 
     global t += dt
     global st += 1
 
-    for pi in prtcls
-        acceleration = CartesianVector{Float64}( [0e0, 0e0, 0e0] );
-        for pj in prtcls
-            if pi != pj
-                acceleration = acceleration + (G/AbsVec( pj.r - pi.r )^3) * (pj.r - pi.r)
-            end
-        end
-        pi.a = acceleration
-    end
+    EulerStep!(prtcls)
 
-    for pi in prtcls
-        pi.v = pi.v + pi.a * dt
-        pi.r = pi.r + pi.v * dt
-    end
-
-    for pi in prtcls
-        BounceBoundaries!(pi)
-        for pj in prtcls
-            if pi != pj
-                BounceParticles!(pi,pj)
-            end
-        end
-    end
+    AllBounces!(prtcls)
 
     if st % stFq == 0
         println( "Step ", st, "/", nbStps, ". ", "Total energy: ", TotKinEnergy(prtcls) + TotPotEnergy(prtcls) )
