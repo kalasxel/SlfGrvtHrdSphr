@@ -24,9 +24,9 @@ const dt = .0001 # step
 const tf = 3e2 # final time
 const nbStps = Int(round( tf/dt, RoundDown )) # number of steps
 const stFq = 1000 :: Int # how many steps between each output
-const nb = 20:: Int # number of particles
+const nb = 15:: Int # number of particles
 const M = 1e0 # all particles with the same mass
-const R = 3e0 # all particles with the same radius
+const R = 10e0 # all particles with the same radius
 const G = 10 # dimensionless grav const. G -> G* M* t0^2 / L0^3 since all masses are the same
 const σ = 1e0 # initial velocity dispersion
 const nbTry = 900000 # max number of attempts for creating spatial distribution without intersections
@@ -57,26 +57,25 @@ outputParticles = zeros( nb, Int(round( tf/(stFq*dt), RoundDown ))+1, 5 ) # outp
     outputParticles[i,1,:] = [t, prtcls[i].r.x, prtcls[i].r.y, prtcls[i].r.z, KineticEnergy(prtcls[i])]
 end
 
+SetAccelerations!(prtcls)
+
 
 println("Total kinetic energy: ", TotKinEnergy(prtcls))
 println("Total potential energy: ", TotPotEnergy(prtcls))
 const EtotIni =  TotKinEnergy(prtcls) + TotPotEnergy(prtcls)
 
-#prtclsOld = deepcopy(prtcls)
-#EulerStep!(prtcls)
-#AllBounces!(prtcls)
 
 @time while(t<=tf)
 
     global t += dt
     global st += 1
 
-    EulerStep!(prtcls)
-
+    # 1st order EulerStep!; 2nd order LeapfrogStep!
+    LeapfrogStep!(prtcls) 
     AllBounces!(prtcls)
 
     if st % stFq == 0
-        println( "Step ", st, "/", nbStps, ". ", "Total energy: ", TotKinEnergy(prtcls) + TotPotEnergy(prtcls) )
+        println( "Step ", st, "/", nbStps, ". ", "Total energy: ", TotKinEnergy(prtcls) + TotPotEnergy(prtcls), "." )
         @inbounds for i in 1:nb
             outputParticles[i,st÷stFq+1,:] = [t, prtcls[i].r.x, prtcls[i].r.y, prtcls[i].r.z, KineticEnergy(prtcls[i])]
         end

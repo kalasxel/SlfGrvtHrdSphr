@@ -25,17 +25,18 @@ function EulerStep!( prtcls::Vector{Particle{T}} ) where {T<:Real}
 end
 
 
-function VerletStep!( prtcls::Vector{Particle{T}}, prtclsOld::Vector{Particle{T}} ) where {T<:Real}
+function LeapfrogStep!( prtcls::Vector{Particle{T}} ) where {T<:Real}
+
+    prtclsOld = deepcopy(prtcls) :: Vector{Particle{T}}
+
+    for pi in prtcls
+        pi.r = pi.r + pi.v*dt + convert(T,2)*pi.a*dt*dt
+    end
 
     SetAccelerations!(prtcls)
 
-    tmp = deepcopy(prtcls)
-
-    for i in 1:nb
-        prtcls[i].r = convert(T,2)*prtcls[i].r - prtclsOld[i].r + prtcls[i].a * dt*dt
-        prtcls[i].v = ( prtcls[i].r - prtclsOld[i].r )/(convert(T,2)*dt)
+    for k in 1:nb
+        prtcls[k].v = prtcls[k].v + ( prtcls[k].a + prtclsOld[k].a )*dt / convert(T,2)
     end
-
-    prtclsOld = deepcopy(tmp)
 
 end
