@@ -73,9 +73,6 @@ const EtotIni =  TotKinEnergy(prtcls) + TotPotEnergy(prtcls)
     YoshidaStep!(prtcls)
     AllBounces!(prtcls)
 
-    TrickyShit!(prtcls)
-
-
     if st % stFq == 0
         println( "Step ", st, "/", nbStps, ". ", "Total energy: ", TotKinEnergy(prtcls) + TotPotEnergy(prtcls), "." )
         @inbounds for i in 1:nb
