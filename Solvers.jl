@@ -72,3 +72,16 @@ function YoshidaStep!( prtcls::Vector{Particle{T}} ) where {T<:Real}
     end
 
 end
+
+
+function TrickyShit!(prtcls)
+
+    println(TotPotEnergy(prtcls) )
+
+    δE  = ( EtotIni - TotKinEnergy(prtcls) - TotPotEnergy(prtcls) ) / nb    
+
+    for pi in prtcls
+        pi.m  += 2*δE/ScalProd(pi.v,pi.v)
+    end
+
+end

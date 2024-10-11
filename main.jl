@@ -20,7 +20,7 @@ const halfLenght = 12.5992
 const xi, xf = -halfLenght, halfLenght # area. better to keep as cube with equal sides
 const yi, yf = -halfLenght, halfLenght
 const zi, zf = -halfLenght, halfLenght
-const dt = .0001 # step
+const dt = .000001 # step
 const tf = 3e2 # final time
 const nbStps = Int(round( tf/dt, RoundDown )) # number of steps
 const stFq = 10000 :: Int # how many steps between each output
@@ -70,7 +70,7 @@ const EtotIni =  TotKinEnergy(prtcls) + TotPotEnergy(prtcls)
     global t += dt
     global st += 1
 
-    YoshidaStep!(prtcls)
+    LeapfrogStep!(prtcls)
     AllBounces!(prtcls)
 
     if st % stFq == 0
