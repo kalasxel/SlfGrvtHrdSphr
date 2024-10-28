@@ -20,15 +20,15 @@ const halfLenght = 12.5992
 const xi, xf = -halfLenght, halfLenght # area. better to keep as cube with equal sides
 const yi, yf = -halfLenght, halfLenght
 const zi, zf = -halfLenght, halfLenght
-const dt = .000001 # step
-const tf = 3e2 # final time
+const dt = 2.e-6 # step
+const tf = 1e2 # final time
 const nbStps = Int(round( tf/dt, RoundDown )) # number of steps
-const stFq = 10000 :: Int # how many steps between each output
-const nb = 10 :: Int # number of particles
+const stFq = 100000 :: Int # how many steps between each output
+const nb = 15 :: Int # number of particles
 const M = 1e0 # all particles with the same mass
 const R = 1e0 # all particles with the same radius
 const G = 10e0 # dimensionless grav const. G -> G* M* t0^2 / L0^3 if all masses are the same
-const σ = 5e-2 # initial velocity dispersion
+const σ = 1.8 # initial velocity dispersion
 const nbTry = 900000 :: Int # max number of attempts for creating spatial distribution without intersections
 
 

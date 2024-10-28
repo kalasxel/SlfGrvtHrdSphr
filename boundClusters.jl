@@ -1,5 +1,7 @@
 using DelimitedFiles
-using Combinatorics
+import Combinatorics: powerset
+
+additionalConstrain = false
 
 const workingDir = dirname(@__FILE__)
 cd(workingDir)
@@ -15,7 +17,7 @@ const zi=prms[4,1]; const zf=prms[4,2];
 const nb=convert(Int,prms[5,1]); const to=convert(Int,prms[5,2])
 const G=prms[6,1]; const σ=prms[6,2];
 
-const stc = 3400 :: Int # considered time moment
+stc = 500 :: Int # considered time moment
 if stc >= to  
     error("Considered step ", stc, " must be less than ", to, ".")
 end
@@ -42,10 +44,36 @@ end
 
 p = [ Prtcl{Float64}(ptmp[1,i],ptmp[2,i],ptmp[3,i],ptmp[4,i]) for i in 1:nb ]
 
+#println("End reading")
+#comb = deleteat!(collect(powerset([i for i=1:nb])),1:nb+1) 
+#println("The size is ", size(comb))
+
 
 function AreTheyBound( p::Vector{Prtcl{T}}, composition::Vector{Int64} ) :: Bool where {T<:Real}
-    ϵkin = ϵpot = 0e0
 
+  # if each particle has negative energy in the field of all the others in the subset
+    if additionalConstrain
+
+        for j in composition
+
+            ϵ = 0e0            
+            for i in composition
+                if i != j
+                    ϵ += - G*M*M / sqrt( (p[j].x-p[i].x)^2 + (p[j].y-p[i].y)^2 + (p[j].z-p[i].z)^2 )
+                end
+            end 
+
+            if ϵ + p[j].e >= 0e0
+                return false
+            end
+
+        end
+
+    end
+
+
+    # the total energy (kinetic + potential) of the subset
+    ϵkin = ϵpot = 0e0
     for j in composition
 
         ϵkin += p[j].e 
@@ -74,7 +102,7 @@ function BoundSubsets( p::Vector{Prtcl{T}} ) :: Vector{T} where {T<:Real}
     len = length(comb)
 
     nBound = [0 for i in 1:nb-1] # number of bound coupls [1], threes[2], ..., nb-s [nb-1]
-    nBound0 = [0 for i in 1:nb-1]
+    nBound0 = deepcopy(nBound)
 
     for i = 1:len
         if AreTheyBound( p, comb[i] )
@@ -86,6 +114,8 @@ function BoundSubsets( p::Vector{Prtcl{T}} ) :: Vector{T} where {T<:Real}
     return nBound ./ nBound0
 
 end
-@time BoundSubsets(p)
+@time bc = BoundSubsets(p)
+
+open( workingDir* "/OUTPUT/NbBoundClusters"* string(stc) *"_sigma" * string(σ) * ".dat", "w" ) do io writedlm(io, [(i+1, bc[i]) for i in 1:nb-1]) end
 
 
